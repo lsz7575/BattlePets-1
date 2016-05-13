@@ -15,7 +15,7 @@ public class WitherPet extends EntityWither {
     public WitherPet(World world, boolean t) {
         super(world);
         baby = false;
-        BossBattleServer bossbar = (BossBattleServer) Util.getPrivateField("bE", EntityWither.class, this);
+        BossBattleServer bossbar = (BossBattleServer) Util.getPrivateField("bF", EntityWither.class, this);
         bossbar.setVisible(false);
         this.navigation = new FlyingNav(this, this.world);
 
