@@ -83,7 +83,7 @@ public class Spawning_v1_9_R2 implements Spawning {
                 entity = com.cosmosnode.battlepets.versions.v1_9_2.EntityTypes.spawnEntity(new ArmorStandPlus(world.getHandle(), type[0], event.getClickedBlock().getLocation().add(0, 1, 0), event.getPlayer()), event.getClickedBlock().getLocation().add(0, 1, 0)).getBukkitEntity();
                 entity.setMetadata("Block", new FixedMetadataValue(plugin, type[0]));
             } else
-                entity = com.cosmosnode.battlepets.versions.v1_9_1.EntityTypes.spawnEntity(com.cosmosnode.battlepets.versions.v1_9_1.EntityTypes.createEntity(type[type.length - 1].toLowerCase(), world.getHandle()), event.getClickedBlock().getLocation().add(0, 1, 0)).getBukkitEntity();
+                entity = com.cosmosnode.battlepets.versions.v1_9_2.EntityTypes.spawnEntity(com.cosmosnode.battlepets.versions.v1_9_2.EntityTypes.createEntity(type[type.length - 1].toLowerCase(), world.getHandle()), event.getClickedBlock().getLocation().add(0, 1, 0)).getBukkitEntity();
             ((LivingEntity) entity).getEquipment().clear();
 
             if (entity instanceof Ageable) {
@@ -122,10 +122,10 @@ public class Spawning_v1_9_R2 implements Spawning {
             } else if (entity instanceof Skeleton) {
                 if (type[0].equalsIgnoreCase("wither")) {
                     ((Skeleton) entity).setSkeletonType(SkeletonType.WITHER);
-                    ((Skeleton) entity).getEquipment().setItemInHand(new ItemStack(Material.STONE_SWORD));
+                    ((Skeleton) entity).getEquipment().setItemInMainHand(new ItemStack(Material.STONE_SWORD));
                 } else {
                     ((Skeleton) entity).setSkeletonType(SkeletonType.NORMAL);
-                    ((Skeleton) entity).getEquipment().setItemInHand(new ItemStack(Material.BOW));
+                    ((Skeleton) entity).getEquipment().setItemInMainHand(new ItemStack(Material.BOW));
                 }
             } else if (entity instanceof Villager) {
                 if (type[0].equalsIgnoreCase("baby")) {
@@ -140,12 +140,12 @@ public class Spawning_v1_9_R2 implements Spawning {
                     ((Zombie) entity).setBaby(false);
                 if (type.length > 1)
                     if (type[0].equalsIgnoreCase("villager") || type[1].equalsIgnoreCase("villager")) {
-                        ((Zombie) entity).setVillager(true);
+                        ((Zombie) entity).setVillagerProfession(Profession.FARMER);
                     } else {
-                        ((Zombie) entity).setVillager(false);
+                        ((Zombie) entity).setVillagerProfession(Profession.FARMER);
                     }
             } else if (entity instanceof PigZombie) {
-                ((PigZombie) entity).getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
+                ((PigZombie) entity).getEquipment().setItemInMainHand(new ItemStack(Material.GOLD_SWORD));
             } else if (entity instanceof Slime) {
                 ((Slime) entity).setSize(Integer.parseInt(type[0]));
             }
@@ -259,6 +259,6 @@ public class Spawning_v1_9_R2 implements Spawning {
 
     @Override
     public void load() {
-        com.cosmosnode.battlepets.versions.v1_9_1.EntityTypes.loadMobs();
+        com.cosmosnode.battlepets.versions.v1_9_2.EntityTypes.loadMobs();
     }
 }

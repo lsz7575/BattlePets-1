@@ -10,16 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 public enum EntityTypes {
-    BLOCKAS("Armor_Stand", 9999, ArmorStandPlus.class) {},
+    BLOCKS("Armor_Stand", 9999, ArmorStandPlus.class) {},
     CUSTOM("Custom", 9999, CustomPet.class),
     BAT("Bat", 65, BatPet.class) {},
     WITHER("Wither", 64, WitherPet.class);
 
     @SuppressWarnings("rawtypes")
-    public static Map<String, Class> mobs = new HashMap<String, Class>();
+    public static Map<String, Class> mobs = new HashMap<>();
 
 
-    private EntityTypes(String name, int id, Class<? extends Entity> custom) {
+    EntityTypes(String name, int id, Class<? extends Entity> custom) {
         addToMaps(custom, name, id);
     }
 
@@ -76,8 +76,8 @@ public enum EntityTypes {
         //((CraftWorld)loc.getWorld()).getHandle().addEntity(entity, SpawnReason.CUSTOM);
 
         int x = MathHelper.floor(entity.locX / 16.0D);
-        int j = MathHelper.floor(entity.locZ / 16.0D);
-        world.getChunkAt(x, j).a(entity);
+        int y = MathHelper.floor(entity.locZ / 16.0D);
+        world.getChunkAt(x, y).a(entity);
         world.entityList.add(entity);
         List u = (List) Util.getPrivateField("u", World.class, world);
         for (int i = 0; i < u.size(); i++) {
@@ -91,10 +91,10 @@ public enum EntityTypes {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static void addToMaps(Class clazz, String name, int id) {
-        ((Map) Util.getPrivateField("c", net.minecraft.server.v1_9_R1.EntityTypes.class, null)).put(name, clazz);
-        ((Map) Util.getPrivateField("d", net.minecraft.server.v1_9_R1.EntityTypes.class, null)).put(clazz, name);
+        ((Map) Util.getPrivateField("c", net.minecraft.server.v1_9_R2.EntityTypes.class, null)).put(name, clazz);
+        ((Map) Util.getPrivateField("d", net.minecraft.server.v1_9_R2.EntityTypes.class, null)).put(clazz, name);
         //((Map)getPrivateField("e", net.minecraft.server.v1_7_R4.EntityTypes.class, null)).put(Integer.valueOf(id), clazz);
-        ((Map) Util.getPrivateField("f", net.minecraft.server.v1_9_R1.EntityTypes.class, null)).put(clazz, Integer.valueOf(id));
+        ((Map) Util.getPrivateField("f", net.minecraft.server.v1_9_R2.EntityTypes.class, null)).put(clazz, Integer.valueOf(id));
         //((Map)getPrivateField("g", net.minecraft.server.v1_7_R4.EntityTypes.class, null)).put(name, Integer.valueOf(id));
     }
 }

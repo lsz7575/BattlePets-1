@@ -9,19 +9,19 @@ import java.lang.reflect.Field;
 
 public class PathFinderGoalFollow extends PathfinderGoal {
 
-    EntityPlayer player;
-    EntityInsentient creature;
-    double range, tprange;
-    double speed;
+    private EntityPlayer player;
+    private EntityInsentient creature;
+    private double range, tpRange;
+    private double speed;
     private Navigation navigation;
 
-    public PathFinderGoalFollow(EntityInsentient creature, EntityPlayer owner, double range, double tprange, double speed) {
+    public PathFinderGoalFollow(EntityInsentient creature, EntityPlayer owner, double range, double tpRange, double speed) {
         this.player = owner;
         this.creature = creature;
         this.range = range;
         this.speed = speed;
         this.navigation = (Navigation) this.creature.getNavigation();
-        this.tprange = tprange;
+        this.tpRange = tpRange;
     }
 
     @Override
@@ -36,13 +36,13 @@ public class PathFinderGoalFollow extends PathfinderGoal {
             riding();
             return false;
         }
-        if (creature.getWorld().getWorld().getName() != player.world.getWorld().getName()) {
+        if (creature.getWorld().getWorld().getName().equals(player.world.getWorld().getName())) {
             creature.setGoalTarget(null);
             tp();
             return false;
         }
         double dist = creature.getBukkitEntity().getLocation().distance(player.getBukkitEntity().getLocation());
-        if (dist >= tprange) {
+        if (dist >= tpRange) {
             creature.setGoalTarget(null);
             tp();
             return false;
@@ -70,10 +70,10 @@ public class PathFinderGoalFollow extends PathfinderGoal {
         // creature.setYawPitch(creature.yaw, creature.pitch);
         creature.getBukkitEntity().getLocation().setYaw(creature.yaw);
         creature.getBukkitEntity().getLocation().setPitch(creature.pitch); //+
-        creature.aO = (creature.aM = creature.yaw);
+        creature.aP = (creature.aN = creature.yaw);
         float f, f1;
-        f = ((EntityLiving) player).bd * 0.5F;
-        f1 = ((EntityLiving) player).be;
+        f = ((EntityLiving) player).be * 0.5F;
+        f1 = ((EntityLiving) player).bf;
         if (f1 <= 0.0F)
             f1 *= 0.25F;
         f *= 0.75F;
@@ -87,7 +87,7 @@ public class PathFinderGoalFollow extends PathfinderGoal {
         creature.P = 1F;
         Field jump = null;
         try {
-            jump = EntityLiving.class.getDeclaredField("bc");
+            jump = EntityLiving.class.getDeclaredField("bd");
             jump.setAccessible(true);
 
             if (jump != null && (creature.onGround || creature instanceof BatPet)) {    // Wouldn't want it jumping while on the ground would we?
@@ -116,7 +116,7 @@ public class PathFinderGoalFollow extends PathfinderGoal {
 
     public void g(float f, float f1) {
         Bukkit.broadcastMessage("riding");
-        if ((creature.co()) || (creature.bx())) {
+        if ((creature.cp()) || (creature.by())) {
             if ((creature.isInWater())) {
                 double d1 = creature.locY;
                 float f4 = 0.8F;
@@ -130,7 +130,7 @@ public class PathFinderGoalFollow extends PathfinderGoal {
                 }
                 if (f2 > 0.0F) {
                     f4 += (0.5460001F - f4) * f2 / 3.0F;
-                    f3 += (creature.ck() - f3) * f2 / 3.0F;
+                    f3 += (creature.cl() - f3) * f2 / 3.0F;
                 }
                 creature.a(f, f1, f3);
                 creature.move(creature.motX, creature.motY, creature.motZ);
@@ -192,7 +192,7 @@ public class PathFinderGoalFollow extends PathfinderGoal {
                     float f7 = (float) (d5 * 10.0D - 3.0D);
                     if (f7 > 0.0F) {
                         creature.a(creature.e((int) f7), 1.0F, 1.0F);
-                        creature.damageEntity(DamageSource.j, f7);
+                        creature.damageEntity(DamageSource.FLY_INTO_WALL, f7);
                     }
                 }
                 if (creature.onGround) {
@@ -201,7 +201,7 @@ public class PathFinderGoalFollow extends PathfinderGoal {
             }
 
         }
-        creature.aE = creature.aF;
+        creature.aF = creature.aG;
         double d1 = creature.locX - creature.lastX;
         double d0 = creature.locZ - creature.lastZ;
         float f2 = MathHelper.sqrt(d1 * d1 + d0 * d0) * 4.0F;
