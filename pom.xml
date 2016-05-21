@@ -114,14 +114,7 @@
             <systemPath>${project.basedir}/libnonmaven/spigot-1.9.2.jar</systemPath>
         </dependency>
 
-        <!-- NMS v1.9.2 -->
-        <dependency>
-            <groupId>net.minecraft.server</groupId>
-            <artifactId>Spigot-192</artifactId>
-            <version>1.9.4</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libnonmaven/spigot-1.9.4.jar</systemPath>
-        </dependency>
+
     </dependencies>
 
     <build>
