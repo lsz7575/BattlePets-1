@@ -1,7 +1,7 @@
-main: darius0021.BattlePets
+main: com.cosmosnode.battlepets.BattlePets
 name: BattlePets
-version: 1.9.4
-author: Darius0021
+version: 1.9.6.1
+author: CosmosNode
 description: BattlePets
 depend: [Vault]
 softdepend: [WorldGuard, Towny]

@@ -1,54 +1,5 @@
 package com.cosmosnode.battlepets;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Horse.Color;
-import org.bukkit.entity.Horse.Style;
-import org.bukkit.entity.Horse.Variant;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Rabbit;
-import org.bukkit.entity.Rabbit.Type;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Villager;
-import org.bukkit.entity.Villager.Profession;
-import org.bukkit.entity.Zombie;
-import org.bukkit.entity.Skeleton.SkeletonType;
-import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-
-
 import com.cosmosnode.battlepets.events.ArmorStandEvent;
 import com.cosmosnode.battlepets.events.EntityEvents;
 import com.cosmosnode.battlepets.events.InventoryEvents;
@@ -58,6 +9,33 @@ import com.cosmosnode.battlepets.versions.v1_8_1.Spawning_v1_8_R1;
 import com.cosmosnode.battlepets.versions.v1_8_2.Spawning_v1_8_R2;
 import com.cosmosnode.battlepets.versions.v1_8_3.Spawning_v1_8_R3;
 import com.cosmosnode.battlepets.versions.v1_9_1.Spawning_v1_9_R1;
+import com.cosmosnode.battlepets.versions.v1_9_2.Spawning_v1_9_R2;
+import org.bukkit.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.*;
+import org.bukkit.entity.Horse.Color;
+import org.bukkit.entity.Horse.Style;
+import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.Rabbit.Type;
+import org.bukkit.entity.Skeleton.SkeletonType;
+import org.bukkit.entity.Villager.Profession;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class BattlePets extends JavaPlugin implements Listener {
     public static HashMap<String, MobStats> statsai = new HashMap<String, MobStats>();
@@ -760,6 +738,9 @@ public class BattlePets extends JavaPlugin implements Listener {
                 break;
             case "v1_9_R1":
                 spawning = new Spawning_v1_9_R1();
+                break;
+            case "v1_9_R2":
+                spawning = new Spawning_v1_9_R2();
         }
 
         return spawning != null;

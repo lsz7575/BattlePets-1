@@ -3,8 +3,7 @@ package com.cosmosnode.battlepets.events;
 import com.cosmosnode.battlepets.BattlePets;
 import com.cosmosnode.battlepets.Database;
 import com.cosmosnode.battlepets.Language;
-import com.cosmosnode.battlepets.versions.v1_9_1.util1_9;
-
+import com.cosmosnode.battlepets.versions.v1_9_1.Util1_9;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -338,7 +337,7 @@ public class PlayerEvents implements Listener {
         if (event.getInventory() instanceof AnvilInventory) {
             if (event.getSlotType() != SlotType.RESULT) return;
             if (BattlePets.version.equals("v1_9_R1")) {
-                if (!util1_9.fromItemStack(event.getCurrentItem()))
+                if (!Util1_9.fromItemStack(event.getCurrentItem()))
                     event.setCancelled(true);
             } else if (event.getCurrentItem().getType() == Material.MONSTER_EGG && event.getCurrentItem().getDurability() == 0) {
                 event.setCancelled(true);
