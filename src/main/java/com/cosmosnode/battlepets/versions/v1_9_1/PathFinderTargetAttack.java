@@ -1,11 +1,10 @@
 package com.cosmosnode.battlepets.versions.v1_9_1;
 
-import java.util.UUID;
-
+import net.minecraft.server.v1_9_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 
-import net.minecraft.server.v1_9_R1.*;
+import java.util.UUID;
 
 public class PathFinderTargetAttack extends PathfinderGoal {
 
