@@ -13,12 +13,12 @@ import java.util.List;
 
 public class WorldguardZones {
 
-    WorldGuardPlugin wg;
-    Plugin plugin;
-    RegionContainer container;
-    RegionQuery query;
-    boolean defaultspawning;
-    List<String> exceptions;
+    private WorldGuardPlugin wg;
+    private Plugin plugin;
+    private RegionContainer container;
+    private RegionQuery query;
+    private boolean defaultspawning;
+    private  List<String> exceptions;
 
     public WorldguardZones(Plugin wg, Plugin plugin) {
         this.wg = (WorldGuardPlugin) wg;
@@ -31,13 +31,14 @@ public class WorldguardZones {
 
     public boolean isAllowed(Entity p) {
         ApplicableRegionSet set = query.getApplicableRegions(p.getLocation());
+
         for (ProtectedRegion region : set.getRegions()) {
             for (String s : exceptions) {
                 if (region.getId().equalsIgnoreCase(s))
                     return !defaultspawning;
             }
-
         }
+
         return defaultspawning;
     }
 }

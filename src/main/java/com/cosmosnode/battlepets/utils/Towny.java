@@ -9,8 +9,8 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.plugin.Plugin;
 
 public class Towny implements Listener {
-    boolean allowpetsintowny;
-    Plugin plugin;
+    private boolean allowpetsintowny;
+    private Plugin plugin;
 
     public Towny(Plugin plugin, boolean t) {
         allowpetsintowny = t;

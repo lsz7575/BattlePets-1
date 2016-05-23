@@ -6,9 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-/**
- * Created by me on 5/22/16.
- */
 public class CommandReload implements CommandExecutor {
 
     @Override

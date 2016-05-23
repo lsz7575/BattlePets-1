@@ -40,8 +40,10 @@ public class Language {
 
     public void update() {
         file = new File(plugin.getDataFolder(), "lang.yml");
+
         if (!file.exists())
             plugin.saveResource("lang.yml", false);
+
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         Reader stream;

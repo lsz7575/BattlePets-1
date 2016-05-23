@@ -2,6 +2,8 @@ package com.cosmosnode.battlepets;
 
 import com.cosmosnode.battlepets.comamnds.CommandBattlePets;
 import com.cosmosnode.battlepets.comamnds.CommandReload;
+import com.cosmosnode.battlepets.events.EntityEvents;
+import com.cosmosnode.battlepets.events.InventoryEvents;
 import com.cosmosnode.battlepets.events.PlayerEvents;
 import com.cosmosnode.battlepets.utils.*;
 import com.cosmosnode.battlepets.versions.Spawning;
@@ -24,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -515,6 +518,7 @@ public class BattlePets extends JavaPlugin {
         plugin = this;
         loadConfig();
         registerCommands();
+        registerListeners();
 
         setupVersion();
         if (spawning == null) {
@@ -714,5 +718,13 @@ public class BattlePets extends JavaPlugin {
     private void registerCommands() {
         getCommand("battlepets").setExecutor(new CommandBattlePets());
         getCommand("bpreload").setExecutor(new CommandReload());
+    }
+
+    private void registerListeners() {
+        PluginManager pm = Bukkit.getPluginManager();
+
+        pm.registerEvents(new EntityEvents(this), this);
+        pm.registerEvents(new InventoryEvents(this), this);
+        pm.registerEvents(new PlayerEvents(this), this);
     }
 }

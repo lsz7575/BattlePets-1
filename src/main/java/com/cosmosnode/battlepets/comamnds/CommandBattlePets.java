@@ -20,45 +20,47 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by me on 5/22/16.
- */
 public class CommandBattlePets implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (args.length == 0) return true;
 
         if (args.length == 0) {
-            if (sender.hasPermission("battlepets.name"))
+            if (sender.hasPermission("battlepets.name")) {
                 sender.sendMessage(Language.getMessage("cmd_name"));
+            }
+
             if (sender.hasPermission("battlepets.egg")) {
                 sender.sendMessage(Language.getMessage("cmd_egg"));
             }
+
             if (sender.hasPermission("battlepets.shop")) {
                 sender.sendMessage(Language.getMessage("cmd_shop"));
             }
+
             if (sender.hasPermission("battlepets.menu")) {
                 sender.sendMessage(Language.getMessage("cmd_menu"));
             }
+
             if (sender.hasPermission("battlepets.cancel")) {
                 sender.sendMessage(Language.getMessage("cmd_cancel"));
             }
+
             sender.sendMessage(Language.getMessage("cmd_set"));
             return true;
         } else {
-
             if (args[0].equalsIgnoreCase("removenear")) {
                 if (sender.hasPermission("battlepets.removenear")) {
                     Player p = (Player) sender;
-                    int atst;
+                    int range;
 
                     try {
-                        atst = Integer.parseInt(args[1]);
+                        range = Integer.parseInt(args[1]);
                     } catch (NumberFormatException e) {
-                        atst = 5;
+                        range = 5;
                     }
 
-                    List<Entity> ent = p.getNearbyEntities(atst, atst, atst);
+                    List<Entity> ent = p.getNearbyEntities(range, range, range);
                     p.sendMessage(Language.getMessage("removal").replace("{number}", "" + ent.size()));
 
                     ent.forEach((Entity) -> Entity.remove());
@@ -77,23 +79,29 @@ public class CommandBattlePets implements CommandExecutor {
                     sender.sendMessage(Language.getMessage("cmd_set_help7"));
                     return true;
                 }
+
                 args[1] = args[1].toLowerCase();
+
                 if (!BattlePets.pets.containsKey(((Player) sender).getUniqueId())) {
                     sender.sendMessage(Language.getMessage("NoPetAlive"));
                     return true;
                 }
+
                 LivingEntity pet = BattlePets.pets.get(((Player) sender).getUniqueId());
                 double kiekis = 0;
+
                 try {
                     kiekis = Double.parseDouble(args[2]);
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     sender.sendMessage(Language.getMessage("invalidnumber"));
                     return true;
                 }
+
                 if (!sender.hasPermission("battlepets.set." + args[1])) {
                     sender.sendMessage(Language.getMessage("no_permission"));
                     return true;
                 }
+
                 switch (args[1]) {
                     case "skillpoints":
                         pet.setMetadata("Points", new FixedMetadataValue(BattlePets.plugin, (int) kiekis));
@@ -103,9 +111,10 @@ public class CommandBattlePets implements CommandExecutor {
                                 Math.min(kiekis, pet.getMetadata("XPForLevel").get(0).asDouble() - 0.01)));
                         break;
                     case "level":
-                        int curr = pet.getMetadata("Level").get(0).asInt();
-                        int neww = (int) kiekis;
-                        if (curr < neww) {
+                        int oldLevel = pet.getMetadata("Level").get(0).asInt();
+                        int newLevel = (int) kiekis;
+
+                        if (oldLevel < newLevel) {
                             String type = pet.getMetadata("Type").get(0).asString().toLowerCase();
                             String st = "";
                             if (type.contains("baby"))
@@ -114,11 +123,16 @@ public class CommandBattlePets implements CommandExecutor {
                             if (st.equalsIgnoreCase("endermite"))
                                 st = "block";
                             MobStats stats = BattlePets.statsai.get(st);
-                            pet.setMetadata("Points", new FixedMetadataValue(BattlePets.plugin, pet.getMetadata("Points").get(0).asInt() + stats.SkillpointsForLevel * (neww - curr)));
+                            pet.setMetadata("Points", new FixedMetadataValue(
+                                    BattlePets.plugin, pet.getMetadata("Points").get(0).asInt() +
+                                    stats.SkillpointsForLevel * (newLevel - oldLevel)));
                         }
                         pet.setMetadata("Level", new FixedMetadataValue(BattlePets.plugin, (int) kiekis));
                         BattlePets.spawning.update(pet, (BattlePets) BattlePets.plugin);
-                        pet.setCustomName(ChatColor.translateAlternateColorCodes('&', Language.display.replace("{name}", pet.getMetadata("Name").get(0).asString()).replace("{level}", pet.getMetadata("Level").get(0).asInt() + "")));
+                        pet.setCustomName(ChatColor.translateAlternateColorCodes('&',
+                                Language.display.replace("{name}",
+                                        pet.getMetadata("Name").get(0).asString())
+                                        .replace("{level}", pet.getMetadata("Level").get(0).asInt() + "")));
 
                         break;
                     case "vitality":
@@ -175,15 +189,16 @@ public class CommandBattlePets implements CommandExecutor {
                             sender.sendMessage(Language.getMessage("NoPetAlive"));
                             return true;
                         }
+
                         if (args[1].length() > BattlePets.namesize) {
                             sender.sendMessage(Language.getMessage("pet_name_toolong"));
                             return true;
                         }
+
                         LivingEntity pet = BattlePets.pets.get(((Player) sender).getUniqueId());
                         pet.setMetadata("Name", new FixedMetadataValue(BattlePets.plugin, args[1]));
                         sender.sendMessage(Language.getMessage("pet_renamed"));
                         pet.setCustomName(ChatColor.translateAlternateColorCodes('&', Language.display.replace("{name}", pet.getMetadata("Name").get(0).asString()).replace("{level}", pet.getMetadata("Level").get(0).asString() + "")));
-                        //sender.sendMessage(Language.getMessage("renamed_warn"));
                     } else {
                         sender.sendMessage(Language.getMessage("cmd_name_usage"));
                     }
@@ -205,22 +220,30 @@ public class CommandBattlePets implements CommandExecutor {
                     return true;
                 }
                 String tipas = args.length >= 3 ? args[2] : args[1];
+
                 if (tipas.split(":")[0].equalsIgnoreCase("skull_item")) {
                     String name = tipas.split("-")[0].split(":")[1];
                     tipas = "SKULL_ITEM:" + name + "-BLOCK";
-                } else
+                } else {
                     tipas = tipas.toUpperCase();
+                }
+
                 String[] argumentai = tipas.split("-");
                 String type = "";
+
                 if (argumentai[0].equalsIgnoreCase("baby")) {
                     type += "baby-";
                 }
+
                 type += argumentai[argumentai.length - 1].toLowerCase();
+
                 if (!BattlePets.statsai.containsKey(type) && !type.equalsIgnoreCase("random")) {
                     sender.sendMessage(Language.getMessage("type_unavailable"));
                     return true;
                 }
+
                 String mob = argumentai[argumentai.length - 1].toLowerCase();
+
                 switch (mob) {
                     case "horse":
                         if (argumentai[0].equalsIgnoreCase("baby")) {
@@ -293,24 +316,30 @@ public class CommandBattlePets implements CommandExecutor {
                             sender.sendMessage(Language.getMessage("cmd_slime_usage2"));
                             return true;
                         }
-
                         break;
                 }
+
                 if (type.equalsIgnoreCase("endermite"))
                     type = "block";
+
                 MobStats stats = BattlePets.statsai.get(type);
+
                 if (type.equalsIgnoreCase("block") || type.equalsIgnoreCase("baby-wither")) {
                     ItemStack item = new ItemStack(Material.MONSTER_EGG, 1);
                     ItemMeta meta = item.getItemMeta();
+
                     if (args.length > 3) {
                         String name = "";
                         for (int i = 3; i < args.length - 1; i++) {
                             name += args[i] + " ";
                         }
+
                         name += args[args.length - 1];
                         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-                    } else
+                    } else {
                         meta.setDisplayName(Language.defaultas.replace("{type}", tipas));
+                    }
+
                     meta.setLore(Arrays.asList(Language.getMessage("type", true) + ": " + tipas, Language.getMessage("level", true) + ": 1", Language.getMessage("xp", true) + ": 0/" + stats.XPForLevel, Language.getMessage("hp", true) + ": " + stats.HP + "/" + stats.HP, Language.getMessage("skillpoints", true) + ": " + stats.SkillpointsForLevel, Language.getMessage("vitality", true) + ": 0", Language.getMessage("defense", true) + ": 0", Language.getMessage("strength", true) + ": 0", Language.getMessage("dexterity", true) + ": 0"));
                     item.setItemMeta(meta);
                     p.getInventory().addItem(item);
@@ -318,14 +347,17 @@ public class CommandBattlePets implements CommandExecutor {
                 } else {
                     ItemStack item = BattlePets.createEgg(type, argumentai);
                     ItemMeta meta = item.getItemMeta();
+
                     if (args.length > 3) {
                         String name = "";
                         for (int i = 3; i < args.length - 1; i++) {
                             name += args[i] + " ";
                         }
+
                         name += args[args.length - 1];
                         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
                     }
+
                     item.setItemMeta(meta);
                     p.getInventory().addItem(item);
                     sender.sendMessage(Language.getMessage("cmd_egg_added"));

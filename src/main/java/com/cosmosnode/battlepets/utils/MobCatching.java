@@ -34,57 +34,65 @@ public class MobCatching implements Listener {
         if (!(event.getDamager() instanceof Egg)) return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (!(((Egg) event.getDamager()).getShooter() instanceof Player)) return;
+
         egg = (Egg) event.getDamager();
         player = (Player) egg.getShooter();
+
         if (!BattlePets.AllWorlds && !BattlePets.worlds.contains(player.getWorld().getName())) {
             player.sendMessage(Language.getMessage("disabled_world"));
             return;
         }
+
         creature = (LivingEntity) event.getEntity();
+
         if (creature.hasMetadata("Owner")) return;
+
         entity = event.getEntity();
         String typeconf = "";
+
         if (entity instanceof Ageable)
             if (!((Ageable) entity).isAdult())
                 typeconf += "baby-";
+
         typeconf += entity.getType().toString().toLowerCase();
-        //if (typeconf.equalsIgnoreCase("endermite"))
-        //	typeconf="block";
         if (!BattlePets.statsai.containsKey(typeconf)) {
             player.sendMessage(Language.getMessage("pet_notcatchable"));
             return;
         }
+
         if (!player.hasPermission("battlepets.catch.*") && !player.hasPermission("battlepets.catch." + typeconf) && !player.hasPermission("battlepets.catch." + typeconf.replace("baby-", "baby_"))) {
             player.sendMessage(Language.getMessage("pet_noperm_catch"));
             return;
         }
+
         MobStats statsai = BattlePets.statsai.get(typeconf);
+
         if (player.getLevel() < statsai.reqlvl) {
             player.sendMessage(Language.getMessage("pet_lowlevel_catch"));
             return;
         }
+
         if (creature.getHealth() > statsai.HPLessThan) {
             player.sendMessage(Language.getMessage("pet_failed_catch"));
             return;
         }
+
         if (rand.nextInt(100) + 1 > statsai.Chances) {
             player.sendMessage(Language.getMessage("pet_escaped_catch"));
             return;
         }
 
         String type = "";
+
         if (entity instanceof Ageable) {
             type += ((Ageable) entity).isAdult() ? "" : "Baby-";
-        }
-        if (entity instanceof Horse) {
+        } else if (entity instanceof Horse) {
             type += ((Horse) entity).getColor().toString() + "-";
             type += ((Horse) entity).getStyle().toString() + "-";
             type += ((Horse) entity).getVariant().toString() + "-";
-        }
-        if (entity instanceof Rabbit)
-                type += ((Rabbit) entity).getRabbitType().toString() + "-";
-        
-        if (entity instanceof Sheep) {
+        } else if (entity instanceof Rabbit) {
+            type += ((Rabbit) entity).getRabbitType().toString() + "-";
+        } else if (entity instanceof Sheep) {
             type += ((Sheep) entity).getColor().toString() + "-";
         } else if (entity instanceof Skeleton) {
             type += ((Skeleton) entity).getSkeletonType() == SkeletonType.NORMAL ? "" : "WITHER-";
@@ -96,6 +104,7 @@ public class MobCatching implements Listener {
         } else if (entity instanceof Slime) {
             type += (((Slime) entity).getSize() + "-");
         }
+
         type += creature.getType();
         ItemStack item = new ItemStack(Material.MONSTER_EGG, 1);
         ItemMeta meta = item.getItemMeta();

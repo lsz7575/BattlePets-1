@@ -11,17 +11,19 @@ import java.util.List;
 public class Converter {
 
     public static void noMoreUnderscore(Plugin plugin) {
-        //config.yml
         FileConfiguration config = plugin.getConfig();
         List<String> names = config.getStringList("AllowedPets");
+
         for (int i = 0; i < names.size(); i++) {
             names.set(i, names.get(i).toLowerCase());
             names.set(i, names.get(i).replace("baby_", "baby-"));
         }
+
         config.set("AllowedPets", names);
         plugin.saveConfig();
-        //pets.yml
+
         File petfile = new File(plugin.getDataFolder(), "pets.yml");
+
         if (!petfile.exists())
             plugin.saveResource("pets.yml", false);
         YamlConfiguration configas = YamlConfiguration.loadConfiguration(petfile);
