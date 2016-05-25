@@ -15,6 +15,7 @@ public class Towny implements Listener {
     public Towny(Plugin plugin, boolean t) {
         allowpetsintowny = t;
         this.plugin = plugin;
+
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -35,7 +36,6 @@ public class Towny implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void spawning(EntitySpawnEvent event) {
         if (event.getEntity().hasMetadata("Owner")) {
-
             event.setCancelled(false);
         }
 

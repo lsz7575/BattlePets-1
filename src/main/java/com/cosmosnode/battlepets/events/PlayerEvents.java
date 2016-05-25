@@ -30,9 +30,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.*;
 
 public class PlayerEvents implements Listener {
-    public static List<UUID> namechanging = new ArrayList<UUID>();
-    public static Map<UUID, UUID> battles = new HashMap<UUID, UUID>();
-    public List<UUID> interact = new ArrayList<UUID>();
+    public static List<UUID> namechanging = new ArrayList<>();
+    public static Map<UUID, UUID> battles = new HashMap<>();
+    public List<UUID> interact = new ArrayList<>();
     BattlePets plugin;
 
     public PlayerEvents(BattlePets plugin) {
@@ -42,17 +42,19 @@ public class PlayerEvents implements Listener {
 
     @EventHandler
     public void menu(PlayerInteractEntityEvent event) {
-
         if (interact.contains(event.getPlayer().getUniqueId())) {
             interact.remove(event.getPlayer().getUniqueId());
             return;
         }
+
         interact.add(event.getPlayer().getUniqueId());
         if (!(event.getRightClicked() instanceof LivingEntity)) return;
+
         if (event.getRightClicked() instanceof Player) {
             Player p1, p2;
             p1 = event.getPlayer();
             p2 = (Player) event.getRightClicked();
+
             if (battles.containsKey(p1.getUniqueId())) {
                 if (battles.containsKey(p2.getUniqueId())) {
 
@@ -79,6 +81,7 @@ public class PlayerEvents implements Listener {
                     return;
                 }
             }
+
             if (battles.containsKey(p2.getUniqueId()))
                 if (battles.get(p2.getUniqueId()).equals(p1.getUniqueId())) {
                     if (!p1.hasPermission("battlepets.battle.accept")) {
@@ -96,15 +99,18 @@ public class PlayerEvents implements Listener {
                         p2.sendMessage(Language.getMessage("battle_started"));
                         battles.remove(p2.getUniqueId());
                     }
-
                 }
             return;
         }
+
         LivingEntity pet = (LivingEntity) event.getRightClicked();
         if (!pet.hasMetadata("Owner")) return;
+
         event.setCancelled(true);
+
         UUID owner = UUID.fromString(pet.getMetadata("Owner").get(0).asString());
         Player p = event.getPlayer();
+
         if (!p.getUniqueId().equals(owner)) {
             p.sendMessage(Language.getMessage("petmenu_failed"));
             return;
@@ -118,22 +124,26 @@ public class PlayerEvents implements Listener {
         if (event.isCancelled()) return;
         if (!(event.getEntity() instanceof LivingEntity) || (event.getEntity() instanceof ArmorStand))
             return;
+
         Player p = null;
+
         if (event.getDamager() instanceof Projectile) {
             Projectile proj = (Projectile) event.getDamager();
             if (proj.getShooter() instanceof Player) {
                 p = (Player) proj.getShooter();
             }
         }
+
         if (event.getDamager() instanceof Player) p = (Player) event.getDamager();
+
         if (p != null) {
             if (!BattlePets.pets.containsKey(p.getUniqueId())) return;
             LivingEntity pet = BattlePets.pets.get(p.getUniqueId());
             if (event.getEntity() == pet) {
                 event.setCancelled(true);
                 return;
-
             }
+
             BattlePets.spawning.setTarget(pet, (LivingEntity) event.getEntity());
         }
         if (event.getEntity() instanceof Player) {
@@ -157,7 +167,9 @@ public class PlayerEvents implements Listener {
     public void interact(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getItem() == null) return;
+
         ItemStack item = event.getItem();
+
         if (item.getType() != Material.MONSTER_EGG) return;
         if (!event.getPlayer().getInventory().getItemInMainHand().equals(item)) return;
         if (!item.hasItemMeta()) return;
@@ -168,20 +180,25 @@ public class PlayerEvents implements Listener {
         if (event.getClickedBlock().getType() == Material.MOB_SPAWNER) {
             event.setCancelled(true);
         }
+
         if (!BattlePets.AllWorlds && !BattlePets.worlds.contains(event.getPlayer().getWorld().getName())) {
             event.getPlayer().sendMessage(Language.getMessage("disabled_world"));
             return;
         }
+
         if (BattlePets.wg != null)
             if (!BattlePets.wg.isAllowed(event.getPlayer())) {
                 event.getPlayer().sendMessage(Language.getMessage("disabled_zone"));
                 return;
             }
+
         if (BattlePets.pets.containsKey(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(Language.getMessage("second_pet"));
             return;
         }
+
         LivingEntity pet = BattlePets.spawning.SpawnCreature(event, plugin);
+
         if (pet != null)
             BattlePets.pets.put(event.getPlayer().getUniqueId(), pet);
 
@@ -191,16 +208,19 @@ public class PlayerEvents implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         if (namechanging.contains(event.getPlayer().getUniqueId()))
             namechanging.remove(event.getPlayer().getUniqueId());
+
         if (battles.containsKey(event.getPlayer().getUniqueId()))
             battles.remove(event.getPlayer().getUniqueId());
+
         if (BattlePets.pets.containsKey(event.getPlayer().getUniqueId()) && Database.enabled) {
             LivingEntity pet = BattlePets.pets.get(event.getPlayer().getUniqueId());
             Database.SavePet(pet);
             BattlePets.spawning.returnPet(pet);
             pet.remove();
             BattlePets.pets.remove(event.getPlayer().getUniqueId());
-        } else if (BattlePets.pets.containsKey(event.getPlayer().getUniqueId()))
+        } else if (BattlePets.pets.containsKey(event.getPlayer().getUniqueId())) {
             BattlePets.return_pet(event.getPlayer());
+        }
     }
 
     @EventHandler
@@ -212,6 +232,7 @@ public class PlayerEvents implements Listener {
     @EventHandler
     public void onTP(final PlayerTeleportEvent event) {
         if (event.getCause() == TeleportCause.UNKNOWN) return;
+
         if (BattlePets.pets.containsKey(event.getPlayer().getUniqueId())) {
             LivingEntity pet = BattlePets.pets.get(event.getPlayer().getUniqueId());
             if (Database.enabled) {
@@ -222,6 +243,7 @@ public class PlayerEvents implements Listener {
             } else
                 BattlePets.return_pet(event.getPlayer());
         }
+
         if (Database.enabled) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () ->
                     Database.LoadPet(event.getPlayer()), 5L);
@@ -266,15 +288,20 @@ public class PlayerEvents implements Listener {
     @EventHandler
     public void onNoPVP(EntityDamageByEntityEvent event) {
         if (!event.getEntity().hasMetadata("Owner")) return;
+
         Player p = null;
+
         if (event.getDamager() instanceof Player)
             p = (Player) event.getDamager();
+
         if (event.getDamager() instanceof Projectile) {
             if (((Projectile) event.getDamager()).getShooter() instanceof Player)
                 p = (Player) ((Projectile) event.getDamager()).getShooter();
         }
+
         if (p == null) return;
         if (BattlePets.PVP) return;
+
         event.setCancelled(true);
 
     }
@@ -288,6 +315,7 @@ public class PlayerEvents implements Listener {
                     event.getPlayer().sendMessage(Language.getMessage("pet_name_toolong"));
                     return;
                 }
+
                 pet.setMetadata("Name", new FixedMetadataValue(BattlePets.plugin, event.getMessage()));
                 event.getPlayer().sendMessage(Language.getMessage("pet_renamed"));
                 pet.setCustomName(ChatColor.translateAlternateColorCodes('&', Language.display.replace("{name}", pet.getMetadata("Name").get(0).asString()).replace("{level}", pet.getMetadata("Level").get(0).asString() + "")));
@@ -311,8 +339,8 @@ public class PlayerEvents implements Listener {
 
     @EventHandler
     public void onServerCommand(ServerCommandEvent event) {
-
         String cmd = event.getCommand().split(" ")[0];
+
         if (BattlePets.aliases.contains(cmd)) {
             event.setCommand(event.getCommand().replaceFirst(cmd, "battlepets"));
         }
@@ -323,16 +351,18 @@ public class PlayerEvents implements Listener {
         if (event.getInventory() instanceof AnvilInventory) {
             if (event.getSlotType() != SlotType.RESULT) return;
             if (BattlePets.version.equals("v1_9_R1")) {
-                if (!Util1_9.fromItemStack(event.getCurrentItem()))
+                if (!Util1_9.fromItemStack(event.getCurrentItem())) {
                     event.setCancelled(true);
+                }
             } else if (event.getCurrentItem().getType() == Material.MONSTER_EGG && event.getCurrentItem().getDurability() == 0) {
                 event.setCancelled(true);
             }
         }
         if (event.getClickedInventory() instanceof HorseInventory) {
             if (event.getWhoClicked().isInsideVehicle()) {
-                if (event.getWhoClicked().getVehicle().hasMetadata("Owner"))
+                if (event.getWhoClicked().getVehicle().hasMetadata("Owner")) {
                     event.setCancelled(true);
+                }
             }
         }
     }

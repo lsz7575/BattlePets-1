@@ -12,6 +12,7 @@ public class BatPet extends EntityBat {
 
     public BatPet(World arg, boolean l) {
         super(arg);
+
         this.navigation = new FlyingNav(this, this.world);
         this.setAsleep(false);
         this.getAttributeInstance(GenericAttributes.d).setValue(0.5);
@@ -19,7 +20,8 @@ public class BatPet extends EntityBat {
 
     @Override
     protected void E() {
-        if (this.getBukkitEntity().getLocation().getBlock().getLocation().add(0, -1, 0).getBlock().getType().isSolid())
+        if (this.getBukkitEntity().getLocation().getBlock().getLocation().add(0, -1, 0).getBlock().getType().isSolid()) {
             this.motY += 0.2f;
+        }
     }
 }

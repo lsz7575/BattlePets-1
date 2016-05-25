@@ -26,6 +26,7 @@ public class Converter {
 
         if (!petfile.exists())
             plugin.saveResource("pets.yml", false);
+
         YamlConfiguration configas = YamlConfiguration.loadConfiguration(petfile);
 
         configas.getKeys(false).forEach(name -> {

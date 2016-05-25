@@ -12,6 +12,7 @@ public class BatPet extends EntityBat {
 
     public BatPet(World arg, boolean l) {
         super(arg);
+
         this.navigation = new FlyingNav(this, this.world);
         this.setAsleep(false);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.5);

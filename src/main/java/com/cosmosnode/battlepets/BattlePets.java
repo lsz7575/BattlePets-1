@@ -21,6 +21,7 @@ import org.bukkit.entity.Horse.Variant;
 import org.bukkit.entity.Rabbit.Type;
 import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.entity.Villager.Profession;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,8 +38,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public class BattlePets extends JavaPlugin {
-    public static HashMap<String, MobStats> statsai = new HashMap<>();
+public class BattlePets extends JavaPlugin implements Listener {
+    public static HashMap<String, com.cosmosnode.battlepets.MobStats> statsai = new HashMap<>();
     public static Map<UUID, LivingEntity> pets = new HashMap<>();
     public static Plugin plugin;
     public static int namesize;
@@ -53,6 +54,10 @@ public class BattlePets extends JavaPlugin {
     public int radius1, radius2;
     boolean allowpetsintowny;
     private List<String> allowed = new ArrayList<>();
+    private MobCatching catcher;
+    private EntityEvents entityevents;
+    private InventoryEvents inventoryevents;
+    private PlayerEvents playerevents;
 
     public static ItemStack return_pet(Player p) {
         if (PlayerEvents.namechanging.contains(p.getUniqueId()))
@@ -90,7 +95,7 @@ public class BattlePets extends JavaPlugin {
         st += pet.getType().toString().toLowerCase();
         if (st.equalsIgnoreCase("endermite"))
             st = "block";
-        MobStats stats = statsai.get(st);
+        com.cosmosnode.battlepets.MobStats stats = statsai.get(st);
         int level = pet.getMetadata("Level").get(0).asInt();
         int max = stats.MaxLevel;
         if (level >= max) return;
@@ -122,7 +127,7 @@ public class BattlePets extends JavaPlugin {
         if (st.equalsIgnoreCase("endermite"))
             st = "block";
         //---------------------------
-        MobStats petstats = statsai.get(st);
+        com.cosmosnode.battlepets.MobStats petstats = statsai.get(st);
         String mobtype;
         int level, points;
         int Vitality, Defense, Strength, Dexterity;
@@ -226,7 +231,7 @@ public class BattlePets extends JavaPlugin {
         st += pet.getType().toString().toLowerCase();
         if (st.equalsIgnoreCase("endermite"))
             st = "block";
-        MobStats stats = BattlePets.statsai.get(st);
+        com.cosmosnode.battlepets.MobStats stats = BattlePets.statsai.get(st);
         Inventory inv = null;
         if (points > 0) {
             inv = Bukkit.createInventory(p, 18, Language.getMessage("menu_skillpoints", true));
@@ -492,7 +497,7 @@ public class BattlePets extends JavaPlugin {
             full_type += (((Slime) entity).getSize() + "-");
         }
         full_type+=type;
-        MobStats statsai = BattlePets.statsai.get(type.toLowerCase());
+        com.cosmosnode.battlepets.MobStats statsai = BattlePets.statsai.get(type.toLowerCase());
         ItemStack item = new ItemStack(Material.MONSTER_EGG, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(Language.defaultas.replace("{type}", full_type));
@@ -564,25 +569,31 @@ public class BattlePets extends JavaPlugin {
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () ->
             pets.values().forEach(pet -> {
-                if (pet.getHealth() < pet.getMaxHealth())
+                if (pet.getHealth() < pet.getMaxHealth()) {
                     pet.setHealth(Math.min(pet.getHealth() + pet.getMetadata("Regen").get(0).asDouble() * pet.getMaxHealth(), pet.getMaxHealth()));
+                }
             }), 0, 20);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            if (!pets.isEmpty()) {
-                List<UUID> ids = new ArrayList<>();
-                pets.keySet().forEach(val -> ids.add(val));
+                if (!pets.isEmpty()) {
+                    List<UUID> ids = new ArrayList<>();
 
-                ids.forEach(val -> {
-                    LivingEntity pet = pets.get(val);
-                    if (!pet.isDead() && pet.isValid()) {
+                    for (LivingEntity pet : pets.values()) {
+                        if (pet.getHealth() < pet.getMaxHealth()) {
+                            pet.setHealth(Math.min(pet.getHealth() + pet.getMetadata("Regen").get(0).asDouble() * pet.getMaxHealth(), pet.getMaxHealth()));
+                        }
+                    }
+
+                    for (UUID val : ids) {
+                    	LivingEntity pet = pets.get(val);
+                        if (!pet.isDead() && pet.isValid()) continue;
+                   
                         try {
                             Bukkit.getPlayer(val).sendMessage(Language.getMessage("disabled_zone_return"));
                             return_pet(Bukkit.getPlayer(val));
-                        } catch (Exception e) { }
+                        } catch (Exception e) {
+                        }
                     }
-                });
-
             }
         }, 0, 40);
 
@@ -627,20 +638,24 @@ public class BattlePets extends JavaPlugin {
             e.printStackTrace();
         }
 
-//        final YamlConfiguration pets = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "pets.yml"));
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "pets.yml"));
+
+        config.getKeys(false).forEach(s -> {
+            if (allowed.contains(s))
+                statsai.put(s, new com.cosmosnode.battlepets.MobStats(this, s, false));
+        });
 
         conf.getKeys(false).forEach(string -> {
             if (allowed.contains(string))
-                statsai.put(string, new MobStats(this, string, false));
+                statsai.put(string, new com.cosmosnode.battlepets.MobStats(this, string, false));
         });
 
         YamlConfiguration customPets = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "custompets.yml"));
 
         customPets.getKeys(false).forEach(string -> {
             if (allowed.contains(string))
-                statsai.put(string, new MobStats(this, string, true));
+                statsai.put(string, new com.cosmosnode.battlepets.MobStats(this, string, true));
         });
-
         allowpetsintowny = getConfig().getBoolean("AllowPetsInTowny");
     }
 
@@ -649,13 +664,15 @@ public class BattlePets extends JavaPlugin {
         if (!pets.isEmpty()) {
             List<UUID> ids = new ArrayList<>();
 
-            pets.keySet().forEach(val -> ids.add(val));
-
-            ids.forEach(val -> {
+            for (UUID val : pets.keySet()) {
+                ids.add(val);
+            }
+            for (UUID val : ids) {
                 try {
                     return_pet(Bukkit.getPlayer(val));
-                } catch (Exception e) { }
-            });
+                } catch (Exception e) {
+                }
+            }
 
         }
         pets.clear();
@@ -669,11 +686,8 @@ public class BattlePets extends JavaPlugin {
 
             pets.keySet().forEach(val -> ids.add(val));
 
-            ids.forEach(val -> {
-                try {
-                    return_pet(Bukkit.getPlayer(val));
-                } catch (Exception e) { }
-            });
+            ids.forEach(val ->
+                pets.keySet().addAll(pets.keySet()));
         }
 
         pets.clear();

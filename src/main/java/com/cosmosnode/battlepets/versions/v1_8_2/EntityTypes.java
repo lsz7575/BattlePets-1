@@ -17,7 +17,7 @@ public enum EntityTypes {
     @SuppressWarnings("rawtypes")
     public static Map<String, Class> mobs = new HashMap<String, Class>();
 
-    private EntityTypes(String name, int id, Class<? extends Entity> custom) {
+    EntityTypes(String name, int id, Class<? extends Entity> custom) {
         addToMaps(custom, name, id);
     }
 
@@ -54,6 +54,7 @@ public enum EntityTypes {
     public static Entity createEntity(String name, World world) {
         Entity entity = null;
         Class localClass = mobs.get(name);
+
         if (localClass != null) {
             try {
                 if (name.equalsIgnoreCase("wither") || name.equalsIgnoreCase("bat")) {
@@ -64,6 +65,7 @@ public enum EntityTypes {
                 Bukkit.getLogger().info("[ERROR] Battlepets: No such mobtype: " + name);
             }
         }
+
         return entity;
     }
 
@@ -71,19 +73,21 @@ public enum EntityTypes {
     public static Entity spawnEntity(Entity entity, Location loc) {
         World world = entity.world;
         entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-        //((CraftWorld)loc.getWorld()).getHandle().addEntity(entity, SpawnReason.CUSTOM);
 
         int x = MathHelper.floor(entity.locX / 16.0D);
         int j = MathHelper.floor(entity.locZ / 16.0D);
         world.getChunkAt(x, j).a(entity);
         world.entityList.add(entity);
         List u = (List) Util.getPrivateField("u", World.class, world);
+
         for (int i = 0; i < u.size(); i++) {
             ((IWorldAccess) u.get(i)).a(entity);
         }
+
         IntHashMap entities = (IntHashMap) Util.getPrivateField("entitiesById", World.class, world);
         entities.a(entity.getId(), entity);
         entity.valid = true;
+
         return entity;
 
     }

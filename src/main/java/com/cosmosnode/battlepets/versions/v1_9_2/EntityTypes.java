@@ -56,6 +56,7 @@ public enum EntityTypes {
     public static Entity createEntity(String name, World world) {
         Entity entity = null;
         Class localClass = mobs.get(name);
+
         if (localClass != null) {
             try {
                 if (name.equalsIgnoreCase("wither") || name.equalsIgnoreCase("bat")) {
@@ -66,6 +67,7 @@ public enum EntityTypes {
                 Bukkit.getLogger().info("[ERROR] Battlepets: No such mobtype: " + name);
             }
         }
+
         return entity;
     }
 
@@ -73,16 +75,17 @@ public enum EntityTypes {
     public static Entity spawnEntity(Entity entity, Location loc) {
         World world = entity.world;
         entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-        //((CraftWorld)loc.getWorld()).getHandle().addEntity(entity, SpawnReason.CUSTOM);
 
         int x = MathHelper.floor(entity.locX / 16.0D);
         int y = MathHelper.floor(entity.locZ / 16.0D);
         world.getChunkAt(x, y).a(entity);
         world.entityList.add(entity);
         List u = (List) Util.getPrivateField("u", World.class, world);
+
         for (int i = 0; i < u.size(); i++) {
             ((IWorldAccess) u.get(i)).a(entity);
         }
+
         IntHashMap entities = (IntHashMap) Util.getPrivateField("entitiesById", World.class, world);
         entities.a(entity.getId(), entity);
         entity.valid = true;
@@ -93,8 +96,6 @@ public enum EntityTypes {
     private static void addToMaps(Class clazz, String name, int id) {
         ((Map) Util.getPrivateField("c", net.minecraft.server.v1_9_R2.EntityTypes.class, null)).put(name, clazz);
         ((Map) Util.getPrivateField("d", net.minecraft.server.v1_9_R2.EntityTypes.class, null)).put(clazz, name);
-        //((Map)getPrivateField("e", net.minecraft.server.v1_7_R4.EntityTypes.class, null)).put(Integer.valueOf(id), clazz);
         ((Map) Util.getPrivateField("f", net.minecraft.server.v1_9_R2.EntityTypes.class, null)).put(clazz, Integer.valueOf(id));
-        //((Map)getPrivateField("g", net.minecraft.server.v1_7_R4.EntityTypes.class, null)).put(name, Integer.valueOf(id));
     }
 }

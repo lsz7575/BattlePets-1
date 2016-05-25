@@ -1,8 +1,8 @@
 package com.cosmosnode.battlepets.versions.v1_8_3;
 
 import com.cosmosnode.battlepets.BattlePets;
+import com.cosmosnode.battlepets.MobStats;
 import com.cosmosnode.battlepets.utils.Language;
-import com.cosmosnode.battlepets.utils.MobStats;
 import com.cosmosnode.battlepets.versions.Spawning;
 import com.cosmosnode.battlepets.versions.Util;
 import net.minecraft.server.v1_8_R3.*;
@@ -36,13 +36,16 @@ public class Spawning_v1_8_R3 implements Spawning {
         List<String> lore = item.getItemMeta().getLore();
         String[] type = lore.get(0).split(" ")[lore.get(0).split(" ").length - 1].split("-");
         String stats = "";
+
         if (type[0].equalsIgnoreCase("baby"))
             stats += "baby-";
         stats += type[type.length - 1].toLowerCase();
+
         if (!BattlePets.statsai.containsKey(stats)) {
             event.getPlayer().sendMessage(Language.getMessage("pet_notspawnable"));
             return null;
         }
+
         if (!event.getPlayer().hasPermission("battlepets.spawn.*") && !event.getPlayer().hasPermission("battlepets.spawn." + stats) && !event.getPlayer().hasPermission("battlepets.spawn." + stats.replace("baby-", "baby_"))) {
             event.getPlayer().sendMessage(Language.getMessage("pet_noperm_spawn"));
             return null;
@@ -54,17 +57,21 @@ public class Spawning_v1_8_R3 implements Spawning {
         double hp;
         int Vitality, Defense, Strength, Dexterity;
         double xp, xpforlevel;
+
         for (int i = 0; i < lore.size(); i++) {
             lore.set(i, ChatColor.stripColor(lore.get(i)));
         }
+
         mobtype = lore.get(0).substring(lore.get(0).indexOf(":") + 2);
         level = Integer.valueOf(lore.get(1).substring(lore.get(1).indexOf(":") + 2));
         xp = Double.valueOf(lore.get(2).substring(lore.get(2).indexOf(":") + 2, lore.get(2).indexOf("/")));
         hp = Double.valueOf(lore.get(3).substring(lore.get(3).indexOf(":") + 2, lore.get(3).indexOf("/")));
+
         if (hp == 0) {
             plugin.shop.openrevive(event.getPlayer());
             return null;
         }
+
         points = Integer.valueOf(lore.get(4).substring(lore.get(4).indexOf(":") + 2));
         Vitality = Integer.valueOf(lore.get(5).substring(lore.get(5).indexOf(":") + 2));
         Defense = Integer.valueOf(lore.get(6).substring(lore.get(6).indexOf(":") + 2));
@@ -73,7 +80,7 @@ public class Spawning_v1_8_R3 implements Spawning {
         xpforlevel = level * statsai.XPForLevel;
         Entity entity = null;
         CraftWorld world = (CraftWorld) event.getClickedBlock().getWorld();
-        //Bukkit.getLogger().info(type[type.length-1]);
+
         try {
             if (statsai.custom) {
                 entity = EntityTypes.spawnEntity(new CustomPet(world.getHandle(), type[0], event.getClickedBlock().getLocation().add(0, 1, 0), event.getPlayer()), event.getClickedBlock().getLocation().add(0, 1, 0)).getBukkitEntity();
@@ -96,6 +103,7 @@ public class Spawning_v1_8_R3 implements Spawning {
                 ((Horse) entity).setTamed(true);
                 ((Horse) entity).setOwner(event.getPlayer());
                 ((Horse) entity).getInventory().setSaddle(new ItemStack(Material.SADDLE));
+
                 if (type[0].equalsIgnoreCase("baby")) {
                     ((Horse) entity).setColor(Color.valueOf(type[1]));
                     ((Horse) entity).setStyle(Style.valueOf(type[2]));
@@ -149,6 +157,7 @@ public class Spawning_v1_8_R3 implements Spawning {
         } catch (Exception e) {
             e.printStackTrace();
             event.getPlayer().sendMessage(Language.getMessage("corrupted_egg"));
+
             try {
                 entity.remove();
             } catch (Exception ee) {
@@ -157,14 +166,18 @@ public class Spawning_v1_8_R3 implements Spawning {
         }
         LivingEntity pet = (LivingEntity) entity;
         EntityInsentient tt = (EntityInsentient) ((CraftLivingEntity) pet).getHandle();
+
         if (tt instanceof WitherPet && type[0].equalsIgnoreCase("baby")) {
             ((WitherPet) tt).setBaby(true);
         }
+
         pet.setCustomName(Language.display.replace("{name}", item.getItemMeta().getDisplayName()).replace("{level}", level + ""));
+
         if (tt instanceof ArmorStandPlus)
             ((ArmorStandPlus) tt).updatename();
         if (tt instanceof CustomPet)
             ((CustomPet) tt).updatename();
+
         tt.setCustomNameVisible(true);
         List goalB = (List) Util.getPrivateField("b", PathfinderGoalSelector.class, tt.goalSelector);
         goalB.clear();
@@ -177,9 +190,12 @@ public class Spawning_v1_8_R3 implements Spawning {
 
         if (tt.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE) == null)
             tt.getAttributeMap().b(GenericAttributes.ATTACK_DAMAGE);
+
         tt.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(statsai.Damage + Strength * statsai._Damage);
         pet.setMaxHealth(statsai.HP + Vitality * statsai._HP);
+
         if (hp < 0) hp = 0;
+
         pet.setHealth(Math.min(hp, statsai.HP + Vitality * statsai._HP));
 
         pet.setMetadata("Level", new FixedMetadataValue(plugin, level));
@@ -197,6 +213,7 @@ public class Spawning_v1_8_R3 implements Spawning {
         pet.setMetadata("Regen", new FixedMetadataValue(plugin, statsai.HPPerSecPercent));
         pet.setMetadata("Speed", new FixedMetadataValue(plugin, statsai.Speed + pet.getMetadata("Dexterity").get(0).asInt() * statsai._Speed));
         tt.goalSelector.a(0, new PathfinderGoalFloat(tt));
+
         if ((entity instanceof Skeleton && !lore.get(0).contains("WITHER")) || (entity instanceof Wither && !type[0].equalsIgnoreCase("baby")))
             tt.goalSelector.a(4, new PathfinderGoalArrowAttack((IRangedEntity) tt, statsai.Speed + Dexterity * statsai._Speed, 20, 60, 15.0F));
         else
@@ -212,11 +229,15 @@ public class Spawning_v1_8_R3 implements Spawning {
         EntityLiving pett = ((CraftLivingEntity) pet).getHandle();
         String type = pet.getMetadata("Type").get(0).asString().toLowerCase();
         String typeconf = "";
+
         if (type.contains("baby"))
             typeconf += "baby-";
+
         typeconf += pet.getType().toString().toLowerCase();
+
         if (typeconf.equalsIgnoreCase("endermite"))
             typeconf = "block";
+
         MobStats statsai = BattlePets.statsai.get(typeconf);
         pett.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(statsai.Damage + pet.getMetadata("Strength").get(0).asInt() * statsai._Damage);
         pet.setMetadata("Damage", new FixedMetadataValue(plugin, statsai.Damage + pet.getMetadata("Strength").get(0).asInt() * statsai._Damage));
@@ -228,12 +249,15 @@ public class Spawning_v1_8_R3 implements Spawning {
     @Override
     public void setTarget(LivingEntity pet, LivingEntity target) {
         if ((target instanceof Player) && !BattlePets.PVP) return;
+
         CraftLivingEntity pet1 = (CraftLivingEntity) pet;
         EntityInsentient pet2 = (EntityInsentient) pet1.getHandle();
+
         if (target == null) {
             pet2.setGoalTarget(null);
             return;
         }
+
         pet2.setGoalTarget(((CraftLivingEntity) target).getHandle(), TargetReason.CUSTOM, true);
     }
 
@@ -241,6 +265,7 @@ public class Spawning_v1_8_R3 implements Spawning {
     public void nameUpdate(LivingEntity pet) {
         if (((CraftLivingEntity) pet).getHandle() instanceof ArmorStandPlus)
             ((ArmorStandPlus) ((CraftLivingEntity) pet).getHandle()).updatename();
+
         if (((CraftLivingEntity) pet).getHandle() instanceof CustomPet)
             ((CustomPet) ((CraftLivingEntity) pet).getHandle()).updatename();
     }

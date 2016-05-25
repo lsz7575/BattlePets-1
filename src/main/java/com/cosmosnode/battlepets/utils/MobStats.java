@@ -1,4 +1,4 @@
-package com.cosmosnode.battlepets.utils;
+package com.cosmosnode.battlepets;
 
 import com.cosmosnode.battlepets.versions.Util;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,9 +10,11 @@ import java.io.File;
 import java.util.HashMap;
 
 public class MobStats {
+    //-------------- CUSTOM
     public boolean custom;
     public double offX, offY, offZ;
     public ItemStack texture;
+    //---------------
     public boolean ridable;
     public int reqlvl;
     public int HPLessThan;
@@ -37,16 +39,15 @@ public class MobStats {
 
     private void build() {
         FileConfiguration config;
-        if (!custom) {
+        if (!custom)
             config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "pets.yml"));
-        } else {
+        else {
             config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "custompets.yml"));
             texture = Util.CreateItem(config.getString(type + ".Texture"), 1);
             offX = config.getDouble(type + ".Offset.X");
             offY = config.getDouble(type + ".Offset.Y");
             offZ = config.getDouble(type + ".Offset.Z");
         }
-
         HPLessThan = config.getInt(type + ".HPLessThan");
         Chances = config.getInt(type + ".Chances");
         MaxLevel = config.getInt(type + ".MaxLevel");
@@ -71,11 +72,9 @@ public class MobStats {
         maxes.put(12, maxstr);
         maxes.put(13, maxdef);
         maxes.put(14, maxdex);
-
-        if (config.contains(type + ".Ridable")) {
+        if (config.contains(type + ".Ridable"))
             ridable = config.getBoolean(type + ".Ridable");
-        } else {
+        else
             ridable = false;
-        }
     }
 }

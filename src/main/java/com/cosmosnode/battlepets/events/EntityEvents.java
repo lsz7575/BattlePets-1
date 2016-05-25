@@ -1,8 +1,8 @@
 package com.cosmosnode.battlepets.events;
 
 import com.cosmosnode.battlepets.BattlePets;
+import com.cosmosnode.battlepets.MobStats;
 import com.cosmosnode.battlepets.utils.Language;
-import com.cosmosnode.battlepets.utils.MobStats;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;

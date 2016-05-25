@@ -1,6 +1,8 @@
 package com.cosmosnode.battlepets.utils;
 
+
 import com.cosmosnode.battlepets.BattlePets;
+import com.cosmosnode.battlepets.MobStats;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,15 +26,15 @@ import java.util.logging.Level;
 
 public class Shop implements Listener {
     public static Map<String, Menu> menus = new HashMap<>();
-
-    BattlePets plugin;
-    Economy eco = null;
-    Itemas revive_item;
+    private BattlePets plugin;
+    private Economy eco = null;
+    private Itemas revive_item;
 
     public Shop(BattlePets plugin) {
         this.plugin = plugin;
         if (Bukkit.getPluginManager().isPluginEnabled("Vault"))
             eco = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class).getProvider();
+
         if (eco == null) {
             plugin.getLogger().info("Economy not found. Disabling BattlePets");
             Bukkit.getPluginManager().disablePlugin(plugin);
@@ -61,25 +63,23 @@ public class Shop implements Listener {
     }
 
     public void createshop() {
-        if (!new File(plugin.getDataFolder(), "shop.yml").exists()) {
+        if (!new File(plugin.getDataFolder(), "shop.yml").exists())
             plugin.saveResource("shop.yml", false);
-        }
-
         FileConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "shop.yml"));
         Map<Integer, Itemas> items = new HashMap<>();
         int size;
         String DisplayName;
         size = config.getInt("Size");
         DisplayName = ChatColor.translateAlternateColorCodes('&', config.getString("Name"));
-
+        //MAINMENU
         for (String s : config.getConfigurationSection("Items").getKeys(false)) {
             ItemStack item = new ItemStack(Material.valueOf(config.getString("Items." + s + ".Material")), 1, (short) config.getInt("Items." + s + ".Data"));
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("Items." + s + ".DisplayName")));
             List<String> lore = new ArrayList<>();
-
-            config.getStringList("Items." + s + ".Lore").forEach(lor -> lore.add(ChatColor.translateAlternateColorCodes('&', lor)) );
-
+            for (String lor : config.getStringList("Items." + s + ".Lore")) {
+                lore.add(ChatColor.translateAlternateColorCodes('&', lor));
+            }
             meta.setLore(lore);
             item.setItemMeta(meta);
             Itemas itemas = new Itemas(
@@ -96,9 +96,8 @@ public class Shop implements Listener {
                             config.getInt("Items." + s + ".Level") : 0);
             items.put(itemas.index, itemas);
         }
-
         menus.put("main_menu", new Menu("main_menu", items, size, DisplayName));
-
+        //SECONDARY MENUS.
         if (config.getConfigurationSection("SecondaryMenus") != null)
             for (String sec : config.getConfigurationSection("SecondaryMenus").getKeys(false)) {
                 items = new HashMap<>();
@@ -110,9 +109,12 @@ public class Shop implements Listener {
                     ItemMeta meta = item.getItemMeta();
                     meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("SecondaryMenus." + sec + ".Items." + s + ".DisplayName")));
                     List<String> lore = new ArrayList<>();
-                    config.getStringList("SecondaryMenus." + sec + ".Items." + s + ".Lore").forEach(lor -> lore.add(ChatColor.translateAlternateColorCodes('&', lor)) );
 
-                meta.setLore(lore);
+                    for (String lor : config.getStringList("SecondaryMenus." + sec + ".Items." + s + ".Lore")) {
+                        lore.add(ChatColor.translateAlternateColorCodes('&', lor));
+                    }
+
+                    meta.setLore(lore);
                     item.setItemMeta(meta);
                     Itemas itemas = new Itemas(
                             config.contains("SecondaryMenus." + sec + ".Items." + s + ".Index") ?
@@ -130,14 +132,14 @@ public class Shop implements Listener {
                 }
                 menus.put(sec, new Menu(sec, items, size, DisplayName));
             }
-
-
+        //REVIVE ITEM
         ItemStack item2 = new ItemStack(Material.valueOf(config.getString("Revive.Material")), 1, (short) config.getInt("Revive.Data"));
         ItemMeta meta = item2.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("Revive.DisplayName")));
-        List<String> lore = new ArrayList<>();
-        config.getStringList("Revive.Lore").forEach(lor -> lore.add(ChatColor.translateAlternateColorCodes('&', lor)) );
-
+        List<String> lore = new ArrayList<String>();
+        for (String lor : config.getStringList("Revive.Lore")) {
+            lore.add(ChatColor.translateAlternateColorCodes('&', lor));
+        }
         meta.setLore(lore);
         item2.setItemMeta(meta);
         Itemas itemas = new Itemas(0, item2, "Revive", config.getDouble("Revive.Price"), "", 0);
@@ -167,14 +169,12 @@ public class Shop implements Listener {
         }
         Menu meniu = null;
         String invname = event.getClickedInventory().getName();
-
         for (Menu men : menus.values()) {
             if (invname == men.DisplayName) {
                 meniu = men;
                 break;
             }
         }
-
         if (meniu == null) return;
         event.setCancelled(true);
         int slot = event.getRawSlot();
@@ -192,9 +192,10 @@ public class Shop implements Listener {
         String[] jobargs = fulljob.split(":");
         String partjob = jobargs[0].toLowerCase();
         LivingEntity pet = BattlePets.pets.get(p.getUniqueId());
+
         switch (partjob) {
             case "revive":
-                ItemStack item2 = p.getInventory().getItemInMainHand();
+                ItemStack item2 = p.getInventory().getItemInHand();
                 ItemMeta meta1 = item2.getItemMeta();
                 List<String> lore = meta1.getLore();
                 double hp = Double.valueOf(lore.get(3).substring(lore.get(3).indexOf("/") + 1));
@@ -224,21 +225,18 @@ public class Shop implements Listener {
                 if (jobargs.length > 3)
                     jobargs[2] += ":" + jobargs[3];
                 String type = jobargs[2].split("-")[jobargs[2].split("-").length - 1].toLowerCase();
-
                 if (!type.equalsIgnoreCase("block") && !type.equalsIgnoreCase("baby-wither")) {
                     ItemStack ite = BattlePets.createEgg(type, jobargs[2].split("-"));
                     ItemMeta meta = ite.getItemMeta();
                     meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', jobargs[1]));
                     type = "";
                     jobargs[2] = jobargs[2].toUpperCase();
-
                     if (jobargs[2].contains("BABY")) {
                         type += "baby-";
                     }
                     jobargs[2].split("-")[jobargs[2].split("-").length - 1].toLowerCase();
                     ite.setItemMeta(meta);
                     p.closeInventory();
-
                     if (p.getInventory().firstEmpty() == -1) {
                         if (p.getEnderChest().firstEmpty() != -1)
                             p.getEnderChest().addItem(ite);
@@ -255,25 +253,20 @@ public class Shop implements Listener {
                     meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', jobargs[1]));
                     type = "";
                     jobargs[2] = jobargs[2].toUpperCase();
-
                     if (jobargs.length > 3)
                         jobargs[2] += ":" + jobargs[3];
                     if (jobargs[2].contains("BABY")) {
                         type += "baby-";
                     }
-
                     type += jobargs[2].split("-")[jobargs[2].split("-").length - 1].toLowerCase();
                     MobStats statsai = BattlePets.statsai.get(type);
-
                     if (statsai == null) {
                         Bukkit.getLogger().log(Level.WARNING, "Egg type: '" + jobargs[2] + "' not found!");
                         return;
                     }
-
                     meta.setLore(Arrays.asList(Language.getMessage("type", true) + ": " + jobargs[2], Language.getMessage("level", true) + ": 1", Language.getMessage("xp", true) + ": " + "0/" + statsai.XPForLevel, Language.getMessage("hp", true) + ": " + statsai.HP + "/" + statsai.HP, Language.getMessage("skillpoints", true) + ": " + statsai.SkillpointsForLevel, Language.getMessage("vitality", true) + ": 0", Language.getMessage("defense", true) + ": 0", Language.getMessage("strength", true) + ": 0", Language.getMessage("dexterity", true) + ": 0"));
                     ite.setItemMeta(meta);
                     p.closeInventory();
-
                     if (p.getInventory().firstEmpty() == -1) {
                         if (p.getEnderChest().firstEmpty() != -1)
                             p.getEnderChest().addItem(ite);
@@ -284,7 +277,6 @@ public class Shop implements Listener {
                     }
                     p.sendMessage(Language.getMessage("egg_bought"));
                 }
-
                 break;
             case "pointsreset":
                 int total = 0;
@@ -308,7 +300,6 @@ public class Shop implements Listener {
                     BattlePets.openmenu(p, BattlePets.pets.get(p.getUniqueId()));
                     return;
                 }
-
                 openshop(p, jobargs[1]);
                 break;
         }

@@ -1,6 +1,7 @@
 package com.cosmosnode.battlepets.utils;
 
 import com.cosmosnode.battlepets.BattlePets;
+import com.cosmosnode.battlepets.MobStats;
 import com.cosmosnode.battlepets.events.PlayerEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -25,10 +26,9 @@ public class Database {
         enabled = BattlePets.plugin.getConfig().getBoolean("MySQL.Enabled");
 
         if (!enabled) return;
-
-        Connection con = null;
+        Connection con;
         PreparedStatement st = null;
-        ResultSet rs = null;
+        ResultSet rs;
 
         port = BattlePets.plugin.getConfig().getString("MySQL.Port");
         url = "jdbc:mysql://" + BattlePets.plugin.getConfig().getString("MySQL.IP") + ":" + port + "/" + BattlePets.plugin.getConfig().getString("MySQL.Database") + "?useUnicode=true&characterEncoding=utf-8";
@@ -63,7 +63,7 @@ public class Database {
                         + "dexterity INT NOT NULL default 1, "
                         + "saved INT NOT NULL default 0)";
 
-                st.executeUpdate(creator);
+                st = con.prepareStatement(creator);
             }
 
             rs.close();
@@ -84,6 +84,7 @@ public class Database {
 
         if (PlayerEvents.battles.containsKey(p.getUniqueId()))
             PlayerEvents.battles.remove(p.getUniqueId());
+
         Connection con;
         PreparedStatement st = null;
         ResultSet rs;
@@ -190,8 +191,8 @@ public class Database {
         int strength = 0;
         int defense = 0;
         int dexterity = 0;
-        int saved = 0;
-        LivingEntity pet = null;
+        int saved;
+        LivingEntity pet;
 
         try {
             con = DriverManager.getConnection(url, user, password);

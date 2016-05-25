@@ -14,16 +14,15 @@ public class WitherPet extends EntityWither {
 
     public WitherPet(World world, boolean t) {
         super(world);
+
         baby = false;
         BossBattleServer bossbar = (BossBattleServer) Util.getPrivateField("bE", EntityWither.class, this);
         bossbar.setVisible(false);
         this.navigation = new FlyingNav(this, this.world);
-
     }
 
     @Override
     protected void M() {
-
         if (baby)
             this.l(600);
 

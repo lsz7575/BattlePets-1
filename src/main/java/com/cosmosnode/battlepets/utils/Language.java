@@ -13,11 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Language {
-    public static Map<String, String> messages = new HashMap<String, String>();
+    public static Map<String, String> messages = new HashMap<>();
     public static String display, defaultas;
-    static String prefix;
-    Plugin plugin;
-    File file;
+    private static String prefix;
+    private Plugin plugin;
+    private File file;
 
     public Language(Plugin plugin) {
         this.plugin = plugin;

@@ -1,7 +1,7 @@
 package com.cosmosnode.battlepets.versions.v1_9_2;
 
 import com.cosmosnode.battlepets.BattlePets;
-import com.cosmosnode.battlepets.utils.MobStats;
+import com.cosmosnode.battlepets.MobStats;
 import net.minecraft.server.v1_9_R2.EntityEndermite;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Location;
@@ -19,6 +19,7 @@ public class CustomPet extends EntityEndermite {
 
     public CustomPet(World world, String type, Location loc, Player p) {
         super(world);
+
         stats = BattlePets.statsai.get(type.toLowerCase());
         stand = (ArmorStand) EntityTypes.spawnEntity(
             EntityTypes.createEntity("armorstand", world),

@@ -1,8 +1,8 @@
 package com.cosmosnode.battlepets.events;
 
 import com.cosmosnode.battlepets.BattlePets;
+import com.cosmosnode.battlepets.MobStats;
 import com.cosmosnode.battlepets.utils.Language;
-import com.cosmosnode.battlepets.utils.MobStats;
 import com.cosmosnode.battlepets.utils.Shop;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,19 +46,22 @@ public class InventoryEvents implements Listener {
 
         if (invname.equalsIgnoreCase(petmenu)) {
             event.setCancelled(true);
+
             LivingEntity pet = BattlePets.pets.get(( event.getWhoClicked()).getUniqueId());
+
             if (pet == null) ( event.getWhoClicked()).closeInventory();
+
             else
                 mainmenu(event);
             return;
         } else if (invname.equalsIgnoreCase(skillsmenu)) {
             event.setCancelled(true);
+
             LivingEntity pet = BattlePets.pets.get(( event.getWhoClicked()).getUniqueId());
-            if (pet == null) {
-                event.getWhoClicked().closeInventory();
-            } else {
+
+            if (pet == null) event.getWhoClicked().closeInventory();
+            else
                 skillmenu(event);
-            }
 
             return;
         } else if (event.getClickedInventory() instanceof HorseInventory) {
@@ -84,29 +87,34 @@ public class InventoryEvents implements Listener {
         battle = ChatColor.stripColor(Language.getMessage("menu_battle", true));
 
         if (event.getSlot() == 0) {
-            if (( event.getWhoClicked()).hasPermission("battlepets.name")) {
+            if (event.getWhoClicked().hasPermission("battlepets.name")) {
                 PlayerEvents.namechanging.add(event.getWhoClicked().getUniqueId());
                 event.getWhoClicked().closeInventory();
                 event.getWhoClicked().sendMessage(Language.getMessage("rename"));
             }
         }
+
         if (choose.equalsIgnoreCase(returnas)) {
             BattlePets.return_pet((Player) event.getWhoClicked());
             event.getWhoClicked().closeInventory();
             return;
         }
+
         if (choose.equalsIgnoreCase(petshop)) {
             Shop.openshop((Player) event.getWhoClicked(), "main_menu");
             return;
         }
+
         if (choose.equalsIgnoreCase(skillpoints)) {
             BattlePets.skillpointsmenu((Player) event.getWhoClicked());
             return;
         }
+
         if (choose.equalsIgnoreCase(ride)) {
             BattlePets.pets.get(event.getWhoClicked().getUniqueId()).setPassenger(event.getWhoClicked());
             return;
         }
+
         if (choose.equalsIgnoreCase(battle)) {
             event.getWhoClicked().closeInventory();
             if (!PlayerEvents.battles.containsKey(event.getWhoClicked().getUniqueId())) {

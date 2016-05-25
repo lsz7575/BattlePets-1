@@ -10,13 +10,17 @@ public class Util1_9 {
     public static boolean fromItemStack(ItemStack item) {
         if (item == null)
             return true;
+
         if (item.getType() != Material.MONSTER_EGG)
             return true;
+
         net.minecraft.server.v1_9_R1.ItemStack stack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tagCompound = stack.getTag();
+
         if (tagCompound != null) {
             @SuppressWarnings("deprecation")
             EntityType type = EntityType.fromName(tagCompound.getCompound("EntityTag").getString("id"));
+
             if (type != null) {
                 return true;
             } else {

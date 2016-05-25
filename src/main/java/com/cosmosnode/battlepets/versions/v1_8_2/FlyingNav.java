@@ -8,7 +8,6 @@ public class FlyingNav extends Navigation {
 
     public FlyingNav(EntityInsentient name, World name2) {
         super(name, name2);
-        // TODO Auto-generated constructor stub
     }
 
 }

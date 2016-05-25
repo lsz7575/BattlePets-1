@@ -23,6 +23,7 @@ public class ArmorStandPlus extends EntityEndermite {
         stand = (ArmorStand) EntityTypes.spawnEntity(EntityTypes.createEntity("armorstand", world), loc.add(0, -1.28, 0)).getBukkitEntity();
         String[] opt = blocks.split(":");
         Material block = Material.valueOf(opt[0]);
+
         if (block == Material.SKULL_ITEM) {
             ItemStack sk = new ItemStack(block, 1, (short) 3);
             SkullMeta meta = (SkullMeta) sk.getItemMeta();
@@ -33,6 +34,7 @@ public class ArmorStandPlus extends EntityEndermite {
             Short data = opt.length == 2 ? Short.parseShort(opt[1]) : (short) 0;
             stand.setHelmet(new ItemStack(block, 1, data));
         }
+
         stand.setVisible(false);
         stand.setGravity(false);
         stand.setMetadata("Owner", new FixedMetadataValue(BattlePets.plugin, player.getUniqueId()));

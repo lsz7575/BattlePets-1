@@ -1,6 +1,7 @@
 package com.cosmosnode.battlepets.utils;
 
 import com.cosmosnode.battlepets.BattlePets;
+import com.cosmosnode.battlepets.MobStats;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -16,12 +17,12 @@ import java.util.Random;
 
 
 public class MobCatching implements Listener {
-    Random rand;
-    BattlePets plugin;
-    Player player;
-    Egg egg;
-    LivingEntity creature;
-    Entity entity;
+    private Random rand;
+    private BattlePets plugin;
+    private Player player;
+    private Egg egg;
+    private LivingEntity creature;
+    private Entity entity;
 
     public MobCatching(BattlePets plugin) {
         this.plugin = plugin;
@@ -55,6 +56,7 @@ public class MobCatching implements Listener {
                 typeconf += "baby-";
 
         typeconf += entity.getType().toString().toLowerCase();
+
         if (!BattlePets.statsai.containsKey(typeconf)) {
             player.sendMessage(Language.getMessage("pet_notcatchable"));
             return;

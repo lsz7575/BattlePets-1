@@ -14,7 +14,6 @@ public class Util {
 
         try {
             field = clazz.getDeclaredField(fieldName);
-
             field.setAccessible(true);
 
             o = field.get(object);
@@ -30,7 +29,9 @@ public class Util {
     public static ItemStack CreateItem(String material, int size) {
         try {
             String[] data = material.split(":");
-            ItemStack item = new ItemStack(Material.valueOf(data[0]), data.length == 2 ? Short.parseShort(data[1]) : (short) 0, (short) size);
+            ItemStack item = new ItemStack(Material.valueOf(data[0]),
+                    data.length == 2 ? Short.parseShort(data[1]) : (short) 0, (short) size);
+
             return item;
         } catch (Exception e) {
             return new ItemStack(Material.AIR);

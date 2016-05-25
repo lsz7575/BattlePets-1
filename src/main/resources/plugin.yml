@@ -8,6 +8,8 @@ softdepend: [WorldGuard, Towny]
 commands:
   battlepets:
     description: main BattlePets commands.
+  bpreload:
+    description: Reload the plugin
 permissions:
   battlepets.catch.*:
     description: Gives ability to catch all mobs.

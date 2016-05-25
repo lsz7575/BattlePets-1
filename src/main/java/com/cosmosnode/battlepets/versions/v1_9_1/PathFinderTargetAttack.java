@@ -10,12 +10,12 @@ public class PathFinderTargetAttack extends PathfinderGoal {
 
     protected EntityInsentient b;
     protected EntityHuman owner;
-    World a;
-    int c;
-    double d;
-    boolean e;
-    PathEntity f;
-    Class<? extends Entity> g;
+    private World a;
+    private int c;
+    private double d;
+    private boolean e;
+    private PathEntity f;
+    private Class<? extends Entity> g;
     private int h;
     private double i;
     private double j;
@@ -27,8 +27,8 @@ public class PathFinderTargetAttack extends PathfinderGoal {
         this.d = paramDouble;
         this.e = paramBoolean;
         owner = ((CraftPlayer)Bukkit.getPlayer(UUID.fromString(b.getBukkitEntity().getMetadata("Owner").get(0).asString()))).getHandle();
-        a(3);
 
+        a(3);
     }
 
     @Override
@@ -39,6 +39,7 @@ public class PathFinderTargetAttack extends PathfinderGoal {
         double d1 = this.b.e(localEntityLiving.locX, localEntityLiving.getBoundingBox().b, localEntityLiving.locZ);
         double d2 = a(localEntityLiving);
         this.h -= 1;
+
         if (((this.e) || (this.b.getEntitySenses().a(localEntityLiving))) &&
                 (this.h <= 0) && (
                 ((this.i == 0.0D) && (this.j == 0.0D) && (this.k == 0.0D)) || (localEntityLiving.e(this.i, this.j, this.k) >= 1.0D) || (this.b.getRandom().nextFloat() < 0.05F))) {
@@ -56,7 +57,9 @@ public class PathFinderTargetAttack extends PathfinderGoal {
                 this.h += 15;
             }
         }
+
         this.c = Math.max(this.c - 1, 0);
+
         if ((d1 <= d2) && (this.c <= 0)) {
             this.c = 20;
             if (this.b.getEquipment(EnumItemSlot.MAINHAND) != null) {
@@ -67,6 +70,7 @@ public class PathFinderTargetAttack extends PathfinderGoal {
             } else
             this.b.getGoalTarget().damageEntity(DamageSource.mobAttack(b), (float) b.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue());
         }
+
         b.a(localEntityLiving, 30F, 30F);
     }
 
@@ -74,8 +78,10 @@ public class PathFinderTargetAttack extends PathfinderGoal {
     public boolean a() {
         if (!b.passengers.isEmpty())
             return false;
+
         if (b.getGoalTarget() == null)
             return false;
+
         if (b.getGoalTarget().dead)
             return false;
         return true;

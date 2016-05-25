@@ -1,8 +1,8 @@
 package com.cosmosnode.battlepets.comamnds;
 
 import com.cosmosnode.battlepets.BattlePets;
+import com.cosmosnode.battlepets.MobStats;
 import com.cosmosnode.battlepets.utils.Language;
-import com.cosmosnode.battlepets.utils.MobStats;
 import com.cosmosnode.battlepets.utils.Shop;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,8 +23,6 @@ import java.util.List;
 public class CommandBattlePets implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (args.length == 0) return true;
-
         if (args.length == 0) {
             if (sender.hasPermission("battlepets.name")) {
                 sender.sendMessage(Language.getMessage("cmd_name"));

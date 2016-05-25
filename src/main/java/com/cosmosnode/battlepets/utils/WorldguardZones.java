@@ -12,13 +12,12 @@ import org.bukkit.plugin.Plugin;
 import java.util.List;
 
 public class WorldguardZones {
-
     private WorldGuardPlugin wg;
     private Plugin plugin;
     private RegionContainer container;
     private RegionQuery query;
     private boolean defaultspawning;
-    private  List<String> exceptions;
+    private List<String> exceptions;
 
     public WorldguardZones(Plugin wg, Plugin plugin) {
         this.wg = (WorldGuardPlugin) wg;
